@@ -1,15 +1,11 @@
 import fire, subprocess, yaml
 
 class ScanDocker():
-
     #Функция чтения политики из файла
     def ReadPolicyFile(PolicyFileName="policy.yml"):
         with open(PolicyFileName, 'r') as PFile:
             policy = yaml.safe_load(PFile) or {}
-        print(policy)
-        
-        policy_dict = policy.get("Policy")  # может быть None
-        
+        policy_dict = policy.get("Policy")
         if isinstance(policy_dict, dict) and "LevelUp" in policy_dict:
             return policy_dict["LevelUp"]
         else:
@@ -30,17 +26,14 @@ class ScanDocker():
     # Функция для сканирования образов Docker
     def scan(self, ImageID):
         Args = []
-        Args.append("trivy")
-        Args.append("image")
-        Args.append(ImageID)
+        Args = ["trivy", "image", ImageID]
         result = subprocess.run(
             Args,
             stdout = subprocess.PIPE,
             stderr = subprocess.STDOUT,
-            universal_newlines = True
-        )
+            universal_newlines = True)
         filtered_output = ScanDocker.AnalysisOut(result.stdout)
-        print(filtered_output)
+        return filtered_output
 
 if __name__ == "__main__":
     obj = ScanDocker()
